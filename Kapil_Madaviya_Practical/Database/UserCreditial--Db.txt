@@ -1,0 +1,25 @@
+
+Username & password for Login
+
+--Admin
+Email: admin1@gmail.com 
+Pass: Admin@1234
+
+--User
+Email: test@gmail.com
+Pass: User@1234
+
+
+Email: test@gmail.com
+Pass: User@1234
+
+Email: user1@gmail.com
+Pass: User1@1234
+
+
+Email: user2@gmail.com
+Pass: User2@1234
+
+
+Email: user3@gmail.com
+Pass: User2@1234
