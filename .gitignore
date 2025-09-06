@@ -1,6 +1,13 @@
 # .gitignore
+<<<<<<< HEAD
 node_modules/
 dist/
+=======
+
+LeaveTrackingUI/node_modules/
+LeaveTrackingUI/dist/
+LeaveTrackingUI/.angular/
+>>>>>>> ef06cb7 (Remove .vs folder from repo and ignore it)
 .env
 .vs/
 

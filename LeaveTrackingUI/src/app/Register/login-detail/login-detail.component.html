@@ -1,0 +1,69 @@
+<div class="outer">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="panel border bg-white login-card">
+          <div class="panel-heading">
+            <h3 class="pt-3 font-weight-bold">Welcome Back</h3>
+            <p class="text-muted">Sign in to continue to your account</p>
+          </div>
+          <div class="px-4 pb-4">
+            <form [formGroup]="loginForm" (ngSubmit)="login()">
+              <!-- Email Field -->
+              <div class="mb-3 input-icon-wrapper">
+                <label for="useremail" class="form-label">Email address</label>
+                <i class="fas fa-envelope input-icon" [class.focus]="loginForm.get('useremail')?.valid && loginForm.get('useremail')?.touched"></i>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="useremail" 
+                  aria-describedby="emailHelp" 
+                  formControlName="useremail"
+                  [class.is-invalid]="loginForm.get('useremail')?.invalid && loginForm.get('useremail')?.touched">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                
+                <!-- Validation Messages -->
+                <div *ngIf="loginForm.get('useremail')?.invalid && loginForm.get('useremail')?.touched" class="error-message">
+                  <div *ngIf="loginForm.get('useremail')?.errors?.['required']">Email is required</div>
+                  <div *ngIf="loginForm.get('useremail')?.errors?.['email']">Please enter a valid email address</div>
+                </div>
+              </div>
+              
+              <!-- Password Field -->
+              <div class="mb-3 input-icon-wrapper">
+                <label for="userpassword" class="form-label">Password</label>
+                <i class="fas fa-lock input-icon" [class.focus]="loginForm.get('userpassword')?.valid && loginForm.get('userpassword')?.touched"></i>
+                <input 
+                  [type]="showPassword ? 'text' : 'password'" 
+                  class="form-control" 
+                  id="userpassword" 
+                  formControlName="userpassword"
+                  [class.is-invalid]="loginForm.get('userpassword')?.invalid && loginForm.get('userpassword')?.touched">
+                <span class="password-toggle" (click)="togglePasswordVisibility()">
+                  <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                </span>
+                
+                <!-- Validation Messages -->
+                <div *ngIf="loginForm.get('userpassword')?.invalid && loginForm.get('userpassword')?.touched" class="error-message">
+                  <div *ngIf="loginForm.get('userpassword')?.errors?.['required']">Password is required</div>
+                  <div *ngIf="loginForm.get('userpassword')?.errors?.['maxlength']">Password cannot exceed 25 characters</div>
+                </div>
+              </div>
+              
+              <!-- Submit Button -->
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-login"
+                [disabled]="loginForm.invalid">
+                Sign In
+              </button>
+              
+              <!-- Sign Up Link -->
+             
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

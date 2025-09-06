@@ -1,0 +1,149 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <!-- Leave Request Form -->
+    <div class="col-lg-5 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+          <h4 class="mb-0">
+            <i class="fas fa-calendar-plus me-2"></i>Create Leave Request
+          </h4>
+        </div>
+        <div class="card-body p-4">
+          <form [formGroup]="leaveRequestForm" (ngSubmit)="LeaveRequest()" class="needs-validation" novalidate>
+            <!-- Leave Type -->
+            <div class="mb-3">
+              <label for="selectLeaveType" class="form-label fw-medium">Leave Type</label>
+              <select class="form-select" id="selectLeaveType" formControlName="selectLeaveType"
+                      [class.is-invalid]="leaveRequestForm.get('selectLeaveType')?.invalid && leaveRequestForm.get('selectLeaveType')?.touched">
+                <option value="" disabled selected>Choose Leave Type...</option>
+                <option value="PL">Privilege Leave</option>
+                <option value="EL">Earned Leave</option>
+                <option value="AL">Annual Leave</option>
+                <option value="SL">Sick Leave</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="leaveRequestForm.get('selectLeaveType')?.invalid && leaveRequestForm.get('selectLeaveType')?.touched">
+                Please select a leave type
+              </div>
+            </div>
+
+            <!-- Date Range -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="leaveStartDate" class="form-label fw-medium">Start Date</label>
+                <input type="date" id="leaveStartDate" class="form-control" 
+                       formControlName="leaveStartDate"
+                       [class.is-invalid]="leaveRequestForm.get('leaveStartDate')?.invalid && leaveRequestForm.get('leaveStartDate')?.touched">
+                <div class="invalid-feedback" *ngIf="leaveRequestForm.get('leaveStartDate')?.invalid && leaveRequestForm.get('leaveStartDate')?.touched">
+                  Start date is required
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="leaveEndDate" class="form-label fw-medium">End Date</label>
+                <input type="date" id="leaveEndDate" class="form-control" 
+                       formControlName="leaveEndDate"
+                       [class.is-invalid]="leaveRequestForm.get('leaveEndDate')?.invalid && leaveRequestForm.get('leaveEndDate')?.touched">
+                <div class="invalid-feedback" *ngIf="leaveRequestForm.get('leaveEndDate')?.invalid && leaveRequestForm.get('leaveEndDate')?.touched">
+                  End date is required
+                </div>
+              </div>
+            </div>
+
+            <!-- Reason for Leave -->
+            <div class="mb-4">
+              <label for="leaveReason" class="form-label fw-medium">Reason For Leave</label>
+              <textarea class="form-control" id="leaveReason" rows="4" 
+                        formControlName="leaveReason"
+                        [class.is-invalid]="leaveRequestForm.get('leaveReason')?.invalid && leaveRequestForm.get('leaveReason')?.touched"
+                        placeholder="Please provide a reason for your leave"></textarea>
+              <div class="invalid-feedback" *ngIf="leaveRequestForm.get('leaveReason')?.invalid && leaveRequestForm.get('leaveReason')?.touched">
+                Reason is required
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg" [disabled]="leaveRequestForm.invalid">
+                <i class="fas fa-paper-plane me-2"></i>Submit Request
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave History -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+          <h4 class="mb-0 text-primary">
+            <i class="fas fa-history me-2"></i>My Leave History
+          </h4>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="ps-4">Leave Type</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">Request Date</th>
+                  <th scope="col">Reason</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Days</th>
+                  <th scope="col" class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let LeaveStatusListByUser of leaveStatusListByUser" class="align-middle">
+                  <td class="ps-4">
+                    <span class="badge bg-info text-dark">{{LeaveStatusListByUser.leaveType}}</span>
+                  </td>
+                  <td>{{LeaveStatusListByUser.startDate | date: 'MMM dd, yyyy'}}</td>
+                  <td>{{LeaveStatusListByUser.endDate | date: 'MMM dd, yyyy'}}</td>
+                  <td>{{LeaveStatusListByUser.dateOfReq | date: 'MMM dd, yyyy'}}</td>
+                  <td>
+                    <span class="d-inline-block text-truncate" style="max-width: 150px;" 
+                          [title]="LeaveStatusListByUser.leaveReason">
+                      {{LeaveStatusListByUser.leaveReason}}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': LeaveStatusListByUser.status === 'Approved',
+                            'bg-danger': LeaveStatusListByUser.status === 'Rejected',
+                            'bg-warning': LeaveStatusListByUser.status !== 'Approved' && LeaveStatusListByUser.status !== 'Rejected'
+                          }">
+                      {{LeaveStatusListByUser.status}}
+                    </span>
+                  </td>
+                  <td class="fw-medium">{{calculateDateDiff(LeaveStatusListByUser.startDate)}}</td>
+                  <td class="text-center">
+                    <button type="button" 
+                            [disabled]="calculateDateDiff(LeaveStatusListByUser.startDate) < 3 || LeaveStatusListByUser.status==='Approved' || LeaveStatusListByUser.status==='Rejected'"  
+                            class="btn btn-sm btn-outline-danger action-btn"
+                            (click)="cancelleLeave(LeaveStatusListByUser.userId, LeaveStatusListByUser.leaveId)">
+                      <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="leaveStatusListByUser.length === 0">
+                  <td colspan="8" class="text-center py-4 text-muted">
+                    <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                    No leave requests found
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer bg-white py-3">
+          <div class="text-muted small">
+            Showing {{leaveStatusListByUser.length}} leave requests
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

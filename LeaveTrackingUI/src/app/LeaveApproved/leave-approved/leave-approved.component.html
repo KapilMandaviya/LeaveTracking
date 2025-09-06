@@ -1,0 +1,108 @@
+<div class="container-fluid py-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <h3 class="mb-0 text-primary">
+          <i class="fas fa-list-check me-2"></i>Leave Requests
+        </h3>
+        <div class="d-flex gap-2">
+          <div class="input-group" style="width: 300px;">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" #searchInput class="form-control border-start-0" 
+                   placeholder="Search by name..." 
+                   (keyup)="onSearchChange(searchInput.value)">
+          </div>
+          <button class="btn btn-success" (click)="exportToExcel()">
+            <i class="fas fa-file-excel me-1"></i>Export Excel
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0" id="leaveList">
+          <thead class="table-light">
+            <tr>
+              <th scope="col" class="ps-4">Employee</th>
+              <th scope="col">Leave Type</th>
+              <th scope="col">Start Date</th>
+              <th scope="col">End Date</th>
+              <th scope="col">Request Date</th>
+              <th scope="col">Reason</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let leaveList of filterleaveStatusList" class="align-middle">
+              <td class="ps-4 fw-medium">{{leaveList.name}}</td>
+              <td>
+                <span class="badge bg-info text-dark">{{leaveList.leaveType}}</span>
+              </td>
+              <td>{{leaveList.startDate| date: 'MMM dd, yyyy' }}</td>
+              <td>{{leaveList.endDate| date: 'MMM dd, yyyy' }}</td>
+              <td>{{leaveList.dateOfReq| date: 'MMM dd, yyyy' }}</td>
+              <td>
+                <span class="d-inline-block text-truncate" style="max-width: 200px;" 
+                      [title]="leaveList.leaveReason">
+                  {{leaveList.leaveReason}}
+                </span>
+              </td>
+              <td>
+                <span class="badge" 
+                      [ngClass]="{
+                        'bg-success': leaveList.status === 'Approved',
+                        'bg-danger': leaveList.status === 'Rejected',
+                        'bg-warning': leaveList.status !== 'Approved' && leaveList.status !== 'Rejected'
+                      }">
+                  {{leaveList.status}}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex justify-content-center gap-2">
+                  <button type="button" 
+                          [disabled]="leaveList.status==='Approved'|| leaveList.status==='Rejected'"  
+                          class="btn btn-sm btn-success action-btn"
+                          (click)="approvedLeave(leaveList.userId,leaveList.leaveId)">
+                    <i class="fas fa-check me-1"></i>Approve
+                  </button>
+                  <button type="button" 
+                          [disabled]="leaveList.status==='Rejected'|| leaveList.status==='Approved'"  
+                          class="btn btn-sm btn-danger action-btn"
+                          (click)="rejectedLeave(leaveList.userId,leaveList.leaveId)">
+                    <i class="fas fa-times me-1"></i>Reject
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filterleaveStatusList.length === 0">
+              <td colspan="8" class="text-center py-4 text-muted">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                No leave requests found
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="card-footer bg-white py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="text-muted">
+          Showing {{filterleaveStatusList.length}} records
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
