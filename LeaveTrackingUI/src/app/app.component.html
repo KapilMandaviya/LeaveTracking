@@ -1,42 +1,44 @@
-
-
-<nav class="navbar navbar-expand-lg navbar-modern">
+<!-- ✅ If logged in: Full navbar -->
+<nav *ngIf="utility.IsLogin(); else guestHeader" class="navbar navbar-expand-lg navbar-modern">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">
       <i class="fas fa-calendar-alt me-2"></i>Leave Tracking
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="userrole !== 'admin'">
           <a class="nav-link" [class.active]="isActive('/LeaveRequest')" routerLink="/LeaveRequest">
             <i class="fas fa-paper-plane me-1"></i>Leave Request
           </a>
         </li>
-        <li class="nav-item">
+
+        <li class="nav-item" *ngIf="userrole === 'admin'">
           <a class="nav-link" [class.active]="isActive('/leaveapproved')" routerLink="/leaveapproved">
             <i class="fas fa-check-circle me-1"></i>Leave Approved
           </a>
         </li>
-        <li class="nav-item">
+
+        <li class="nav-item" *ngIf="userrole === 'admin'">
           <a class="nav-link" [class.active]="isActive('/registeruser')" routerLink="/registeruser">
             <i class="fas fa-user-plus me-1"></i>Register User
           </a>
         </li>
       </ul>
-      
+
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item" *ngIf="utility.IsLogin()">
+        <li class="nav-item">
           <a class="nav-link logout-btn" (click)="signOut()">
             <i class="fas fa-sign-out-alt me-1"></i>Logout
           </a>
         </li>
-        <li class="nav-item user-info" *ngIf="utility.IsLogin()">
+        <li class="nav-item user-info">
           <span class="nav-link">
             <i class="fas fa-user-circle me-1"></i>
-            {{username}} | <span class="user-role">{{userrole}}</span>
+            {{ username }} | <span class="user-role">{{ userrole }}</span>
           </span>
         </li>
       </ul>
@@ -44,5 +46,17 @@
   </div>
 </nav>
 
+<!-- ✅ If not logged in: show header with same class, just branding -->
+<ng-template #guestHeader>
+  <nav class="navbar navbar-expand-lg navbar-modern">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-calendar-alt me-2"></i>Leave Tracking
+      </a>
+    </div>
+  </nav>
+</ng-template>
+
+<!-- Always show routed content -->
 <router-outlet></router-outlet>
 <ng-toast></ng-toast>

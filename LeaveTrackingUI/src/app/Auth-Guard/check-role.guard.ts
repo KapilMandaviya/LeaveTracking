@@ -23,6 +23,7 @@ export class employeeAuthGuard implements CanActivate
       }
       else{
         this.route.navigate(['login']);
+        this.utility.signOut();
         return false
       }
    }

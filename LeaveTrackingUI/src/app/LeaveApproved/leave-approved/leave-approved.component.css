@@ -78,3 +78,8 @@
     font-size: 0.75rem;
   }
 }
+.wrap-text {
+  white-space: normal;
+  word-wrap: break-word;  /* for long words */
+  overflow-wrap: break-word;
+}

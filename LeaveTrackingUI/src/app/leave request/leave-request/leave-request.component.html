@@ -14,48 +14,66 @@
             <div class="mb-3">
               <label for="selectLeaveType" class="form-label fw-medium">Leave Type</label>
               <select class="form-select" id="selectLeaveType" formControlName="selectLeaveType"
-                      [class.is-invalid]="leaveRequestForm.get('selectLeaveType')?.invalid && leaveRequestForm.get('selectLeaveType')?.touched">
+                [class.is-invalid]="leaveRequestForm.get('selectLeaveType')?.invalid && leaveRequestForm.get('selectLeaveType')?.touched">
                 <option value="" disabled selected>Choose Leave Type...</option>
                 <option value="PL">Privilege Leave</option>
                 <option value="EL">Earned Leave</option>
                 <option value="AL">Annual Leave</option>
                 <option value="SL">Sick Leave</option>
               </select>
-              <div class="invalid-feedback" *ngIf="leaveRequestForm.get('selectLeaveType')?.invalid && leaveRequestForm.get('selectLeaveType')?.touched">
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.get('selectLeaveType')?.invalid && leaveRequestForm.get('selectLeaveType')?.touched">
                 Please select a leave type
               </div>
             </div>
 
             <!-- Date Range -->
             <div class="row mb-3">
-              <div class="col-md-6">
-                <label for="leaveStartDate" class="form-label fw-medium">Start Date</label>
-                <input type="date" id="leaveStartDate" class="form-control" 
-                       formControlName="leaveStartDate"
-                       [class.is-invalid]="leaveRequestForm.get('leaveStartDate')?.invalid && leaveRequestForm.get('leaveStartDate')?.touched">
-                <div class="invalid-feedback" *ngIf="leaveRequestForm.get('leaveStartDate')?.invalid && leaveRequestForm.get('leaveStartDate')?.touched">
-                  Start date is required
-                </div>
+              <label for="leaveStartDate" class="form-label fw-medium">Start Date</label>
+              <input type="date" id="leaveStartDate" class="form-control" formControlName="leaveStartDate" [min]="today"
+                [class.is-invalid]="leaveRequestForm.get('leaveStartDate')?.invalid && leaveRequestForm.get('leaveStartDate')?.touched">
+
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.get('leaveStartDate')?.errors?.['required'] && leaveRequestForm.get('leaveStartDate')?.touched">
+                Start date is required
               </div>
-              <div class="col-md-6">
-                <label for="leaveEndDate" class="form-label fw-medium">End Date</label>
-                <input type="date" id="leaveEndDate" class="form-control" 
-                       formControlName="leaveEndDate"
-                       [class.is-invalid]="leaveRequestForm.get('leaveEndDate')?.invalid && leaveRequestForm.get('leaveEndDate')?.touched">
-                <div class="invalid-feedback" *ngIf="leaveRequestForm.get('leaveEndDate')?.invalid && leaveRequestForm.get('leaveEndDate')?.touched">
-                  End date is required
-                </div>
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.get('leaveStartDate')?.errors?.['pastStartDate'] && leaveRequestForm.get('leaveStartDate')?.touched">
+                Start date cannot be in the past
               </div>
+
+
+              <label for="leaveEndDate" class="form-label fw-medium">End Date</label>
+              <input type="date" id="leaveEndDate" class="form-control" formControlName="leaveEndDate"
+                [min]="leaveRequestForm.get('leaveStartDate')?.value" [max]="maxEndDate" [class.is-invalid]="
+    (leaveRequestForm.get('leaveEndDate')?.invalid && leaveRequestForm.get('leaveEndDate')?.touched)
+    || leaveRequestForm.hasError('endBeforeStart')
+    || leaveRequestForm.hasError('endTooFar')">
+
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.get('leaveEndDate')?.errors?.['required'] && leaveRequestForm.get('leaveEndDate')?.touched">
+                End date is required
+              </div>
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.hasError('endBeforeStart') && leaveRequestForm.get('leaveEndDate')?.touched">
+                End date cannot be before start date
+              </div>
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.hasError('endTooFar') && leaveRequestForm.get('leaveEndDate')?.touched">
+                End date cannot be more than 5 days after start date
+              </div>
+
+
             </div>
 
             <!-- Reason for Leave -->
             <div class="mb-4">
               <label for="leaveReason" class="form-label fw-medium">Reason For Leave</label>
-              <textarea class="form-control" id="leaveReason" rows="4" 
-                        formControlName="leaveReason"
-                        [class.is-invalid]="leaveRequestForm.get('leaveReason')?.invalid && leaveRequestForm.get('leaveReason')?.touched"
-                        placeholder="Please provide a reason for your leave"></textarea>
-              <div class="invalid-feedback" *ngIf="leaveRequestForm.get('leaveReason')?.invalid && leaveRequestForm.get('leaveReason')?.touched">
+              <textarea class="form-control" id="leaveReason" rows="4" formControlName="leaveReason"
+                [class.is-invalid]="leaveRequestForm.get('leaveReason')?.invalid && leaveRequestForm.get('leaveReason')?.touched"
+                placeholder="Please provide a reason for your leave"></textarea>
+              <div class="invalid-feedback"
+                *ngIf="leaveRequestForm.get('leaveReason')?.invalid && leaveRequestForm.get('leaveReason')?.touched">
                 Reason is required
               </div>
             </div>
@@ -90,7 +108,7 @@
                   <th scope="col">Request Date</th>
                   <th scope="col">Reason</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Days</th>
+                  
                   <th scope="col" class="text-center">Actions</th>
                 </tr>
               </thead>
@@ -103,14 +121,13 @@
                   <td>{{LeaveStatusListByUser.endDate | date: 'MMM dd, yyyy'}}</td>
                   <td>{{LeaveStatusListByUser.dateOfReq | date: 'MMM dd, yyyy'}}</td>
                   <td>
-                    <span class="d-inline-block text-truncate" style="max-width: 150px;" 
-                          [title]="LeaveStatusListByUser.leaveReason">
+                    <span class="d-inline-block text-truncate wrap-text" style="max-width: 150px;"
+                      [title]="LeaveStatusListByUser.leaveReason">
                       {{LeaveStatusListByUser.leaveReason}}
                     </span>
                   </td>
                   <td>
-                    <span class="badge" 
-                          [ngClass]="{
+                    <span class="badge" [ngClass]="{
                             'bg-success': LeaveStatusListByUser.status === 'Approved',
                             'bg-danger': LeaveStatusListByUser.status === 'Rejected',
                             'bg-warning': LeaveStatusListByUser.status !== 'Approved' && LeaveStatusListByUser.status !== 'Rejected'
@@ -118,12 +135,12 @@
                       {{LeaveStatusListByUser.status}}
                     </span>
                   </td>
-                  <td class="fw-medium">{{calculateDateDiff(LeaveStatusListByUser.startDate)}}</td>
+                  
                   <td class="text-center">
-                    <button type="button" 
-                            [disabled]="calculateDateDiff(LeaveStatusListByUser.startDate) < 3 || LeaveStatusListByUser.status==='Approved' || LeaveStatusListByUser.status==='Rejected'"  
-                            class="btn btn-sm btn-outline-danger action-btn"
-                            (click)="cancelleLeave(LeaveStatusListByUser.userId, LeaveStatusListByUser.leaveId)">
+                    <button type="button"
+                      [disabled]="calculateDateDiff(LeaveStatusListByUser.startDate) < 3 || LeaveStatusListByUser.status==='Approved' || LeaveStatusListByUser.status==='Rejected'"
+                      class="btn btn-sm btn-outline-danger action-btn"
+                      (click)="cancelleLeave(LeaveStatusListByUser.userId, LeaveStatusListByUser.leaveId)">
                       <i class="fas fa-times me-1"></i>Cancel
                     </button>
                   </td>
